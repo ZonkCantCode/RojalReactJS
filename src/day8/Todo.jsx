@@ -34,6 +34,7 @@ export default function Todo() {
       console.error("Error adding todo:", error);
     }
   };
+  
 
   const deleteTodo = async (id) => {
     try {
@@ -45,6 +46,22 @@ export default function Todo() {
       console.error("Error deleting todo:", error);
     }
   };
+  
+    const toggleComplete = async (id, completed) => {
+    try { 
+      const res = await axios.put(`https://dummyjson.com/todos/${id}`, {
+        completed: !completed,
+      });
+      setTodos(
+        todos.map((todo) =>
+          todo.id === id ? { ...todo, completed: res.data.completed } : todo
+        )
+      );
+    } catch (error) {
+      console.error("Error toggling todo completion:", error);
+    }
+  };
+
 
   return (
     <div className="todo-container">
@@ -63,8 +80,15 @@ export default function Todo() {
         <p>Loading todos...</p>
       ) : (
         <ul>
+          
           {todos.map((todo) => (
             <li key={todo.id}>
+               <input
+                type="checkbox"  
+                checked={todo.completed}
+                onChange={() => { toggleComplete(todo.id, todo.completed)
+                }}
+              />
               {todo.todo}
               <button
                 className="delete-button"
